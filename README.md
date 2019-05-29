@@ -1,0 +1,2 @@
+# GoPhercises
+Golang training repo
