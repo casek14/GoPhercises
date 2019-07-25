@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	jsonFilePath         = "/home/casek/go/src/github.com/casek14/GoPhercises/UrlShortener/short.json"
+	jsonFilePath         = "./short.json"
 	mongoConnetionString = "localhost"
 	databaseName         = "test"
 	collectionName       = "trainers"
@@ -69,6 +69,7 @@ func MapHandler(mapa map[string]string, fallback http.Handler) http.HandlerFunc 
 		path := request.URL.Path
 		log.Printf("Handling redirect for %s url!", path)
 		if destination, err := mapa[path]; err {
+			log.Printf("------------ HANDLING PATH: %s\n",path	)
 			http.Redirect(writer, request, destination, http.StatusFound)
 			return
 		}
@@ -90,7 +91,9 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func listRecords(w http.ResponseWriter, r *http.Request) {
-	client, err := mongoConnetion.NewClient(mongoUser, mongoPassword, mongoConnetionString, mongoPort, databaseName, collectionName)
+	config := initDbConnectionConfig()
+	client, err := mongoConnetion.NewClient(config.DbUser, config.DbPassword, config.DbUrl, config.DbPort, config.DbName, config.DbCollectionName)
+
 	if err != nil {
 		log.Fatalln("Failed to get mongo client")
 	}
@@ -108,7 +111,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 	} else {
 		r.ParseForm()
-		client, err := mongoConnetion.NewClient(mongoUser, mongoPassword, mongoConnetionString, mongoPort, databaseName, collectionName)
+		config := initDbConnectionConfig()
+		client, err := mongoConnetion.NewClient(config.DbUser, config.DbPassword, config.DbUrl, config.DbPort, config.DbName, config.DbCollectionName)
+
 		if err != nil {
 			log.Fatalln("Failed to get mongo client")
 		}
@@ -122,7 +127,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 func redirect(w http.ResponseWriter, r *http.Request) {
 	newUrl := r.URL.Path[7:]
 	fmt.Println(newUrl)
-	client, err := mongoConnetion.NewClient(mongoUser, mongoPassword, mongoConnetionString, mongoPort, databaseName, collectionName)
+	config := initDbConnectionConfig()
+	client, err := mongoConnetion.NewClient(config.DbUser, config.DbPassword, config.DbUrl, config.DbPort, config.DbName, config.DbCollectionName)
+
 	if err != nil {
 		log.Fatalln("Failed to get mongo client")
 	}
