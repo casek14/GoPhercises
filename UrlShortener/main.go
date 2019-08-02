@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/casek14/GoPhercises/UrlShortener/mongoConnetion"
+	"github.com/casek14/UniqueHashGenerator/hash"
 	"go.mongodb.org/mongo-driver/bson"
+	"google.golang.org/grpc"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -21,6 +23,7 @@ const (
 	mongoUser            = "root"
 	mongoPassword        = "r00tme"
 	mongoPort            = "27017"
+	RandomStringConnection = "localhost"
 )
 
 type UrlRecord struct {
@@ -39,6 +42,7 @@ type MongoConnectionConfig struct {
 	DbCollectionName string
 	DbUser string
 	DbPassword string
+	RandomStringAddress string
 }
 
 // Load json file and parse long and short urls
@@ -117,8 +121,18 @@ func register(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatalln("Failed to get mongo client")
 		}
-		if r.FormValue("url") != "" && r.FormValue("short") != "" {
-			_, err = mongoConnetion.InsertRecord(client, mongoConnetion.Record{Url: r.FormValue("url"), ShortUrl: r.FormValue("short")})
+
+		conn, err := grpc.Dial(config.RandomStringAddress, grpc.WithInsecure())
+		if err != nil {
+			log.Printf("Cannot connect to gRPC server: %s\n", err)
+		}
+		defer conn.Close()
+		c := hash.NewHashClient(conn)
+
+		hash := GetHash(c)
+
+		if r.FormValue("url") != "" && hash != "" {
+			_, err = mongoConnetion.InsertRecord(client, mongoConnetion.Record{Url: r.FormValue("url"), ShortUrl: hash})
 		}
 		http.Redirect(w, r, "/list", http.StatusFound)
 	}
@@ -143,9 +157,17 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 // DbPassword - password used for db connection (DBPASSWORD)
 // DbName - name of database to use (DBNAME)
 // DbCollectionName - name of collection to use (DBCOLLECTIONNAME)
+// RandomStringAddress - address for random string service (RANDOMSTRINGADDRESS)
 func initDbConnectionConfig() *MongoConnectionConfig{
 	var config MongoConnectionConfig
-	envVars := map[string]string{"DBURL":"","DBPORT":"","DBUSER":"","DBPASSWORD":"","DBNAME":"","DBCOLLECTIONNAME":""}
+	envVars := map[string]string{
+		"DBURL":"",
+		"DBPORT":"",
+		"DBUSER":"",
+		"DBPASSWORD":"",
+		"DBNAME":"",
+		"DBCOLLECTIONNAME":"",
+		"RANDOMSTRINGADDRESS":""}
 	for env, _ := range envVars{
 		value, ok := os.LookupEnv(env)
 		if ok {
@@ -158,9 +180,21 @@ func initDbConnectionConfig() *MongoConnectionConfig{
 	config.DbPassword = envVars["DBPASSWORD"]
 	config.DbName = envVars["DBNAME"]
 	config.DbCollectionName = envVars["DBCOLLECTIONNAME"]
+	config.RandomStringAddress = envVars["RANDOMSTRINGADDRESS"]
 	log.Printf("MONGO CONNECTION STRING= %+v\n",config)
 	return &config
 }
+
+func GetHash(client hash.HashClient) string{
+	r, err := client.GetHash(context.Background(), &hash.HashRequest{})
+	if err != nil {
+		log.Printf("Unable to get HASH from gRPC server: %s\n", err)
+		return ""
+	}
+
+	return r.Hash
+}
+
 
 
 func main() {
