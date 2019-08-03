@@ -180,7 +180,7 @@ func initDbConnectionConfig() *MongoConnectionConfig{
 	config.DbPassword = envVars["DBPASSWORD"]
 	config.DbName = envVars["DBNAME"]
 	config.DbCollectionName = envVars["DBCOLLECTIONNAME"]
-	config.RandomStringAddress = envVars["RANDOMSTRINGADDRESS"]
+	config.RandomStringAddress = envVars["RANDOMSTRINGADDRESS"]+":50051"
 	log.Printf("MONGO CONNECTION STRING= %+v\n",config)
 	return &config
 }
