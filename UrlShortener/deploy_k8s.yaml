@@ -1,0 +1,117 @@
+#MongoDB app
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+spec:
+  containers:
+  - name: mongodb
+    image: mongo:3.4.21-xenial
+    env:
+    - name: MONGO_INITDB_ROOT_USERNAME
+      value: "root"
+    - name: MONGO_INITDB_ROOT_PASSWORD
+      value: "r00tme"
+    ports:
+    - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-db-svc
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+    protocol: TCP
+  selector:
+    app: mongodb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-string-generator-app
+  labels:
+    app: unique-hash-generator
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: unique-hash-generator
+  template:
+    metadata:
+      app: unique-hash-generator
+    spec:
+      containers:
+      - name: unique-hash-generator
+        image: quay.io/casek14/uniquehashgenerator:v1.0
+        ports:
+        - containerPort: 50051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unique-hash-generator-svc
+spec:
+  ports:
+  - port: 50051
+    targetPort: 50051
+    protocol: TCP
+  selector:
+    app: unique-hash-generator
+---
+#UrlShortenerApp config mat with env variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: urlshort-config
+data:
+  urlshort.config: |
+    DBURL=mongo-db-svc
+    DBPORT=27017
+    DBUSER=root
+    DBPASSWORD=r00tme
+    DBNAME=test
+    DBCOLLECTIONNAME=trainers
+    RANDOMSTRINGADDRESS=unique-hash-generator-svc
+---
+#UrlShotenerApp
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: urlshortenerapp
+  labels:
+    app: urlshort
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: urlshort
+  template:
+    metadata:
+      labels:
+        app: urlshort
+    spec:
+      containers:
+      - name: urlshort
+        image: quay.io/casek14/urlshortenerapp:v1.2
+        envFrom:
+          configMapKeyRef: 
+            name: urlshort-config
+        ports:
+        - containerPort: 8080
+---
+#UrlShortenerApp service
+apiVersion: v1
+kind: Service
+metadata:
+  name: urlshort-service
+spec:
+  selector:
+    app: urlshort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
