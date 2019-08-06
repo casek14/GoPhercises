@@ -42,7 +42,8 @@ spec:
       app: unique-hash-generator
   template:
     metadata:
-      app: unique-hash-generator
+      labels:
+        app: unique-hash-generator
     spec:
       containers:
       - name: unique-hash-generator
@@ -98,7 +99,7 @@ spec:
       - name: urlshort
         image: quay.io/casek14/urlshortenerapp:v1.2
         envFrom:
-          configMapKeyRef: 
+        - configMapRef:
             name: urlshort-config
         ports:
         - containerPort: 8080
