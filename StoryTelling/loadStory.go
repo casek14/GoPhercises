@@ -2,9 +2,11 @@ package storyTelling
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -20,16 +22,53 @@ func GetAvailableStories(path string) []string {
 	}
 
 	for _, f := range files {
-		availableStories = append(availableStories, f.Name())
+		availableStories = append(availableStories, strings.TrimSuffix(f.Name(), ".json"))
 	}
 
 	return availableStories
+}
+
+type Stories struct {
+	StoriesList []string
+}
+
+type RenderStory struct {
+	StoryTitle string
+	Paragraphs []string
+	Options    []Option
 }
 
 // Story
 type Story struct {
 	StoryTitle string    `json:"story_title"`
 	Chapters   []Chapter `json:"chapters"`
+}
+
+func FindChapterByTitle(s string, ch string) (*Chapter, error) {
+	story, err := LoadStory(s)
+	if err != nil {
+		log.Printf("Unable to find story %s, ERR: %s", s, err)
+		return nil, err
+	}
+	for _, c := range story.Chapters {
+		if c.Title == ch {
+			return &c, nil
+		}
+	}
+	return nil, fmt.Errorf("Chapter with title %s does not exists in story %s", ch, s)
+}
+
+func GetRenderStory(story string, chapter string) (*RenderStory, error) {
+	ch, err := FindChapterByTitle(story, chapter)
+	if err != nil {
+		return nil, err
+	}
+	var renderedStory RenderStory
+	renderedStory.StoryTitle = story
+	renderedStory.Paragraphs = ch.Paragraphs
+	renderedStory.Options = ch.Options
+
+	return &renderedStory, nil
 }
 
 type Chapter struct {

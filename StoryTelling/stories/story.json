@@ -1,19 +1,72 @@
 {
-  "story_title": "Story title",
+  "story_title": "Story 1",
   "chapters": [
   {
-    "title": "A title for that story arc. Think of it like a chapter title.",
+    "title": "first chapter",
     "story": [
       "A series of paragraphs, each represented as a string in a slice.",
       "This is a new paragraph in this particular story arc."
     ],
     "options": [
       {
-        "text": "the text to render for this option. eg 'venture down the dark passage'",
-        "link": "the name of the story arc to navigate to. This will match the story-arc key at the very root of the JSON document"
+        "text": "Option 1 the text to render for this option. eg 'venture down the dark passage'",
+        "link": "second chapter"
+      },
+      {
+        "text": "Option 2 the text to render for this option. eg 'venture down the dark passage'",
+        "link": "third chapter"
+      },
+      {
+        "text": "Option 3 the text to render for this option. eg 'venture down the dark passage'",
+        "link": "fourth chapter"
       }
     ]
-  }
+  },
+    {
+      "title": "second chapter",
+      "story": [
+        "A series of paragraphs, each represented as a string in a slice.",
+        "This is a new paragraph in this particular story arc.",
+        "SECOND CHAPTER"
+      ],
+      "options": [
+        {
+          "text": "Option 2 the text to render for this option. eg 'venture down the dark passage'",
+          "link": "third chapter"
+        },
+        {
+          "text": "Option 3 the text to render for this option. eg 'venture down the dark passage'",
+          "link": "fourth chapter"
+        }
+      ]
+    },
+    {
+      "title": "third chapter",
+      "story": [
+        "A series of paragraphs, each represented as a string in a slice.",
+        "This is a new paragraph in this particular story arc.",
+        "THIRD CHAPTER"
+      ],
+      "options": [
+        {
+          "text": "Option 1 the text to render for this option. eg 'venture down the dark passage'",
+          "link": "fourth chapter"
+        }
+      ]
+    },
+    {
+      "title": "fourth chapter",
+      "story": [
+        "A series of paragraphs, each represented as a string in a slice.",
+        "This is a new paragraph in this particular story arc."
+      ],
+      "options": [
+        {
+          "text": "Option 1 the text to render for this option. eg 'venture down the dark passage'",
+          "link": "first chapter"
+        }
+      ]
+    }
   ]
 }
 

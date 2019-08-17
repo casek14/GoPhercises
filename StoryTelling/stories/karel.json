@@ -1,0 +1,60 @@
+{
+  "story_title": "Karls story",
+  "chapters": [
+  {
+    "title": "first chapter",
+    "story": [
+      "When Karl was 8 year old he wanted to become a programer",
+      "But he didnt know about programing anything.",
+      "His parrents decided to send him to school. Which school should he take? "
+    ],
+    "options": [
+      {
+        "text": "University of hradec Kralove",
+        "link": "Hradec chapter"
+      },
+      {
+        "text": "Charles university",
+        "link": "Charles chapter"
+      },
+      {
+        "text": "Oxford university",
+        "link": "Oxford chapter"
+      }
+    ]
+  },
+    {
+      "title": "Hradec chapter",
+      "story": [
+        "Karel started studying at Hradec university. He met people around OpenStack.",
+	"Karel started working with OpenContrail SDN technology and it ruined his life.",
+	"That is end of karel story."
+      ],
+      "options": [
+      ]
+    },
+    {
+      "title": "Charles chapter",
+      "story": [
+	"Karel started studyin at Charles university.",
+	"He never finised the school, because it was too tough for him.",
+	"Karel become bricklayer, married Tereza and is happy now.",
+	"That is end of karel story."
+      ],
+      "options": [
+              ]
+    },
+    {
+      "title": "Oxford chapter",
+      "story": [
+        "Karel finished studies at Oxford university.",
+        "Then he moved to Silicon Valey, and started working as programmer for Facebook.",
+	"He rent a garage and works 14 hours every day to survive.",
+	"That is end of karel story."
+      ],
+      "options": [
+      ]
+    }
+  ]
+}
+

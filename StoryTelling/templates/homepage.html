@@ -1,0 +1,12 @@
+<html>
+<head>
+</head>
+<body>
+<h1>Wellcome to my story teller app, choose one of the given stories:</h1>
+<ul>
+{{ range .StoriesList}}
+    <li><a href="/story/{{.}}/first%20chapter">{{.}}</a></li>
+{{ end }}
+</ul>
+</body>
+</html>
