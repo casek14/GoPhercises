@@ -29,6 +29,14 @@ spec:
   selector:
     app: mongodb
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uniquehash-config
+data:
+  dburl: etcd-database
+  dbport: '2379'
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,7 +55,18 @@ spec:
     spec:
       containers:
       - name: unique-hash-generator
-        image: quay.io/casek14/uniquehashgenerator:v1.0
+        image: quay.io/casek14/uniquehashgenerator:v1.3
+        env:
+        - name: DBURL
+          valueFrom:
+            configMapKeyRef:
+              name: uniquehash-config
+              key: dburl
+        - name: DBPORT
+          valueFrom:
+            configMapKeyRef:
+              name: uniquehash-config
+              key: dbport
         ports:
         - containerPort: 50051
 ---
@@ -69,14 +88,13 @@ kind: ConfigMap
 metadata:
   name: urlshort-config
 data:
-  urlshort.config: |
-    DBURL=mongo-db-svc
-    DBPORT=27017
-    DBUSER=root
-    DBPASSWORD=r00tme
-    DBNAME=test
-    DBCOLLECTIONNAME=trainers
-    RANDOMSTRINGADDRESS=unique-hash-generator-svc
+  dburl: mongo-db-svc
+  dbport: '27017'
+  dbuser: root
+  dbpassword: r00tme
+  dbname: test
+  dbcollectionname: trainers
+  randomstringaddress: unique-hash-generator-svc
 ---
 #UrlShotenerApp
 apiVersion: apps/v1
@@ -97,10 +115,43 @@ spec:
     spec:
       containers:
       - name: urlshort
-        image: quay.io/casek14/urlshortenerapp:v1.2
-        envFrom:
-        - configMapRef:
-            name: urlshort-config
+        image: quay.io/casek14/urlshortenerapp:v1.4
+        env:
+        - name: DBURL
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: dburl
+        - name: DBPORT
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: dbport
+        - name: DBUSER
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: dbuser
+        - name: DBPASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: dbpassword
+        - name: DBNAME
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: dbname
+        - name: DBCOLLECTIONAME
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: dbcollectionname
+        - name: RANDOMSTRINGADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: urlshort-config
+              key: randomstringaddress
         ports:
         - containerPort: 8080
 ---
